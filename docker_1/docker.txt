@@ -1,0 +1,102 @@
+### DOCKER BASICS 101
+
+-> Container is an isolated system, where user can install/pull required images and work on it.
+
+1. docker container ls
+-- it will list all the running containers in docker
+
+2. docker container ls -a
+-- it will list all the containers in docker
+
+3. docker start <container_name>
+-- it will start the paused/stopped container
+
+4. docker stop <container_name>
+-- it will stop the running container
+
+5. docker run -it <image_name>
+-- (-it) stands for interactive, where basics user is commanding also to connect to the containers terminal and not to disconnect it after pulling the image
+-- it will create a new container and if the image is not previously installed, then docker will pull it from the docker hub in the particular create container
+
+6. docker exec <container_name> <command_name>
+-- if user want to execute any command in the container from outside of the container then this particular command is used, and if then want to stay connected to the container then user should use (-it)
+
+7. docker images / docker image ls
+-- it is used for listing all the images in user's local machine
+------------------------------------------------------------------------------------------------------------------------------------------
+
+### PORT MAPPING IN DOCKER
+
+1. docker run -it -p <port>:<port> <image_name>
+-- this is for exposing the port from docker's isolated container to user's local machine
+------------------------------------------------------------------------------------------------------------------------------------------
+
+### PASSING ENVIRONMENT VARIABLES IN DOCKER
+
+1. docker run -it -p <port>:<port> -e <key>:<value> <image_name>
+-- user can also pass extra environment variables from local machine to the container
+------------------------------------------------------------------------------------------------------------------------------------------
+
+### CONTAINERIZE NODEJS SERVER WITH DOCKER
+
+-> "Dockerfile" helps us creating an image of our own nodejs server including the required packages like nodejs, package, main.js(files), package-lock, etc.
+
+1. docker build -t <image_name> <Dockerfile_path>
+E.g.: docker build -t piyush-app .
+-- it is used to create an image of our configured Dockerfile
+------------------------------------------------------------------------------------------------------------------------------------------
+
+### STACKING AND RUNNING MULTIPLE CONTAINERS IN DOCKER
+
+-> "docker-compose.yaml" help us create a stack where all the containers are listed and on running that particular stack, all the containers will start running
+
+1. write docker compose file as per the requirement
+2. docker compose up (docker compose -f <file_name> (for force push)). Now, both the containers will run in a stack
+3. docker compose down --> for stopping the stack
+4. docker compose up -d --> run the stack/containers in detached mode(background)
+------------------------------------------------------------------------------------------------------------------------------------------
+
+### HOW TO PUBLISH CUSTOM IMAGE ON DOCKER HUB
+
+Steps:
+1. Create a repository on docker hub
+e.g.: piyush-app
+
+2. build a new image with your docker hub username and repo name
+e.g.: docker build -t ravi0529/piyush-app .
+
+3. now you can push your image to docker hub
+e.g.: docker push ravi0529/piyush-app
+------------------------------------------------------------------------------------------------------------------------------------------
+
+### DOCKER NETWORKING
+
+-> docker networking helps to communiate with each other and with the outside world (for getting an IP address, talk to browser, etc.)
+
+1. docker network ls
+-- user can view list of networks in their docker
+-- bridge, host, none are some pre-defined networks
+-- bridge is the default network between the local machine and docker container
+
+2. docker compose inspect bridge
+-- it will show from all the running containers, which containers are connected through bridge network
+
+3. docker run -it --network=host <image_name>
+-- this is change the network of the image from bridge to host
+
+-> major difference between bridge and host network
+--- we don't need to do port mapping in host network, by default it will work inside the docker as well as outside it because of same network of user's machine and docker container
+
+-> none - is a network which is not at all in connection with outside world
+------------------------------------------------------------------------------------------------------------------------------------------
+
+### CREATING OUR OWN DOCKER NETWORKING
+
+1. docker network create -d <network_type> <network_name>
+e.g.: docker network create -d bridge piyush
+
+-> why to create own custom docker network?
+--- for example I have created 2 containers using my "piyush" network
+--- docker run -it --network=piyush --name first_container ubuntu
+--- docker run -it --network=piyush --name second_container busybox
+--- here, busybox and ubuntu are 2 different os running on same network but in different containers, but due to same network, the containers can communicate between one another
